@@ -1,31 +1,39 @@
-'use strict';
-exports.handler = (event, context, callback) => {
+const username = process.env.username;
+const password = process.env.password;
 
-    // Get request and request headers
+const unauthResp = {
+    status: "401",
+    statusDescription: "Unauthorized",
+    headers: {
+        "www-authenticate": [
+            {
+                key: "WWW-Authenticate",
+                value: 'Basic realm="Login"'
+            }
+        ]
+    }
+};
+
+exports.handler = (event, context, callback) => {
     const request = event.Records[0].cf.request;
     const headers = request.headers;
 
-    // Configure authentication
-    const authUser = 'user';
-    const authPass = 'pass';
-
-    // Construct the Basic Auth string
-    const authString = 'Basic ' + new Buffer(authUser + ':' + authPass).toString('base64');
-
-    // Require Basic authentication
-    if (typeof headers.authorization == 'undefined' || headers.authorization[0].value != authString) {
-        const body = 'Unauthorized';
-        const response = {
-            status: '401',
-            statusDescription: 'Unauthorized',
-            body: body,
-            headers: {
-                'www-authenticate': [{key: 'WWW-Authenticate', value:'Basic'}]
-            },
-        };
-        callback(null, response);
+    const authorization = headers["authorization"];
+    // no Authorization header
+    if (!authorization || authorization.length === 0) {
+        return callback(null, unauthResp);
     }
 
-    // Continue request processing if authentication passed
-    callback(null, request);
+    const credentials = authorization[0]["value"];
+    const split = credentials.split(" ");
+
+    if (split.length === 2 && split[0].toLowerCase() === "basic") {
+        let decoded = new Buffer(split[1], "base64").toString("ascii");
+
+        if (decoded === username + ":" + password) {
+            return callback(null, request);
+        }
+    }
+
+    return callback(null, unauthResp);
 };

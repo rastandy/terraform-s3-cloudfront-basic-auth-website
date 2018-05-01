@@ -1,29 +1,29 @@
-variable region {
+variable "region" {
   default = "eu-central-1"
 }
 
-variable project {
+variable "project" {
   default = "noproject"
 }
 
-variable environment {
+variable "environment" {
   default = "default"
 }
 
-variable domain {}
+variable "domain" {}
 
-variable bucket_name {
+variable "bucket_name" {
   description = "The name of the S3 bucket to create."
 }
 
-variable deployer {}
-variable acm-certificate-arn {}
+variable "deployer" {}
+variable "acm-certificate-arn" {}
 
-variable routing_rules {
+variable "routing_rules" {
   default = ""
 }
 
-variable not-found-response-path {
+variable "not-found-response-path" {
   default = "/404.html"
 }
 
