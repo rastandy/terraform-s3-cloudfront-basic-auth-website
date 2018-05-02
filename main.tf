@@ -3,9 +3,25 @@ provider "aws" {
   region = "${var.region}"
 }
 
+data "template_file" "bucket_policy" {
+  template = "${file("${path.module}/website_bucket_policy.json")}"
+
+  vars {
+    bucket = "${var.bucket_name}"
+    secret = "${var.duplicate-content-penalty-secret}"
+  }
+}
+
 resource "aws_s3_bucket" "website_bucket" {
+  provider = "aws.${var.region}"
   bucket   = "${var.bucket_name}"
-  acl      = "private"
+  policy   = "${data.template_file.bucket_policy.rendered}"
+
+  website {
+    index_document = "index.html"
+    error_document = "404.html"
+    routing_rules  = "${var.routing_rules}"
+  }
 
   tags = "${merge("${var.tags}",map("Name", "${var.project}-${var.environment}-${var.domain}", "Environment", "${var.environment}", "Project", "${var.project}"))}"
 }
@@ -27,6 +43,11 @@ resource "aws_cloudfront_distribution" "website_cdn" {
       http_port              = "80"
       https_port             = "443"
       origin_ssl_protocols   = ["TLSv1"]
+    }
+
+    custom_header {
+      name  = "User-Agent"
+      value = "${var.duplicate-content-penalty-secret}"
     }
   }
 

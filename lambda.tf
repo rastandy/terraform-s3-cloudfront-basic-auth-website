@@ -5,7 +5,7 @@ provider "aws" {
 
 data "archive_file" "auth" {
   type = "zip"
-  output_path = "${path.module}/.zip/auth.zip"
+  output_path = "${path.root}/.zip/auth.zip"
   source {
     filename = "index.js"
     content = "${file("${path.module}/auth.js")}"
