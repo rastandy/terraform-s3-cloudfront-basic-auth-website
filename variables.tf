@@ -16,6 +16,9 @@ variable "bucket_name" {
   description = "The name of the S3 bucket to create."
 }
 
+variable "username" {}
+variable "password" {}
+
 variable "duplicate-content-penalty-secret" {}
 variable "deployer" {}
 variable "acm-certificate-arn" {}

@@ -3,12 +3,21 @@ provider "aws" {
   region = "us-east-1"
 }
 
+data "template_file" "lambda_code" {
+  template = "${file("${path.module}/auth.js")}"
+
+  vars {
+    username = "${var.username}"
+    password = "${var.password}"
+  }
+}
+
 data "archive_file" "auth" {
   type = "zip"
   output_path = "${path.root}/.zip/auth.zip"
   source {
     filename = "index.js"
-    content = "${file("${path.module}/auth.js")}"
+    content = "${data.template_file.lambda_code.rendered}"
   }
 }
 
