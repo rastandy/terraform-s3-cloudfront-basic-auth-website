@@ -21,6 +21,17 @@ resource "aws_iam_role_policy_attachment" "basic" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
+###############################################################################
+## Configure website bucket policy
+###############################################################################
+data "template_file" "bucket_policy" {
+  template = "${file("${path.module}/website_bucket_policy.json")}"
+
+  vars {
+    bucket = "${var.bucket_name}"
+    secret = "${var.duplicate-content-penalty-secret}"
+  }
+}
 
 ###############################################################################
 ## Configure the credentials and access to the bucket for a deployment user
