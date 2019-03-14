@@ -42,7 +42,7 @@ resource "aws_cloudfront_distribution" "website_cdn" {
     }
   }
 
-  default_root_object = ${var.default_root_object}
+  default_root_object = "${var.default_root_object}"
 
   custom_error_response = ["${var.custom_error_response}"]
 
