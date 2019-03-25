@@ -28,7 +28,7 @@ variable "routing_rules" {
 }
 
 variable "default_root_object" {
-  default = "/index.html"
+  default = "index.html"
 }
 
 variable "not-found-response-path" {
